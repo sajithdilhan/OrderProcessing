@@ -1,5 +1,7 @@
+using MassTransit;
 using Payment.Gateway.Api.Services;
 using Scalar.AspNetCore;
+using Shared.Contracts.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,21 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IPaymentEventPublisher, PaymentEventPublisher>();
+
+var rabbitSettings = builder.Configuration.GetSection(RabbitMqSettings.SectionName).Get<RabbitMqSettings>();
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(rabbitSettings!.Host,
+                 rabbitSettings.VirtualHost,
+                 h =>
+                 {
+                     h.Username(rabbitSettings.Username);
+                     h.Password(rabbitSettings.Password);
+                 });
+    });
+});
 
 var app = builder.Build();
 

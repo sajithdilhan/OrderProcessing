@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path="docker-compose.yml" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Inventory.Service.Api/Inventory.Service.Api.csproj" />
     <Project Path="src/Oms.Api/Oms.Api.csproj" />

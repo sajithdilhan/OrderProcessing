@@ -1,19 +1,20 @@
-﻿using Shared.Contracts.Orders;
+﻿using MassTransit;
+using Shared.Contracts.Orders;
 
 namespace Payment.Gateway.Api.Services;
 
 public sealed class PaymentEventPublisher(
+    IPublishEndpoint publishEndpoint,
     ILogger<PaymentEventPublisher> logger) : IPaymentEventPublisher
 {
-    public Task PublishAsync(
+    public async Task PublishAsync(
         PaymentConfirmedEvent paymentConfirmedEvent,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation(
-            "Simulated publish of payment confirmed event for OrderId {OrderId} at {PaidAt}",
-            paymentConfirmedEvent.OrderId,
-            paymentConfirmedEvent.PaidAt);
+        await publishEndpoint.Publish(paymentConfirmedEvent, cancellationToken);
 
-        return Task.CompletedTask;
+        logger.LogInformation(
+            "Published PaymentConfirmedEvent for OrderId {OrderId}",
+            paymentConfirmedEvent.OrderId);
     }
 }
