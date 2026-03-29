@@ -16,9 +16,7 @@ public sealed class PaymentConfirmedProcessor(
 
         if (await processedOrderStore.ExistsAsync(key, cancellationToken))
         {
-            logger.LogInformation(
-                "Skipping already processed reservation for OrderId {OrderId}",
-                message.OrderId);
+            logger.LogInformation("Skipping already processed reservation for OrderId {OrderId}", message.OrderId);
 
             return;
         }
@@ -30,19 +28,14 @@ public sealed class PaymentConfirmedProcessor(
         {
             try
             {
-                logger.LogInformation(
-                    "Processing payment confirmed event for OrderId {OrderId}, attempt {Attempt}",
-                    message.OrderId,
-                    attempt);
+                logger.LogInformation("Processing payment event for OrderId {OrderId}, attempt {Attempt}", message.OrderId, attempt);
 
                 var request = new InventoryAllocationRequest(message.OrderId, message.Items);
 
                 await inventoryClient.ReserveAsync(request, cancellationToken);
                 await processedOrderStore.MarkProcessedAsync(key, cancellationToken);
 
-                logger.LogInformation(
-                    "Reserved inventory for OrderId {OrderId}",
-                    message.OrderId);
+                logger.LogInformation("Reserved inventory for OrderId {OrderId}", message.OrderId);
 
                 return;
             }
@@ -50,11 +43,7 @@ public sealed class PaymentConfirmedProcessor(
             {
                 lastException = ex;
 
-                logger.LogWarning(
-                    ex,
-                    "Retry attempt {Attempt} failed for OrderId {OrderId}",
-                    attempt,
-                    message.OrderId);
+                logger.LogWarning(ex,"Retry attempt {Attempt} failed for OrderId {OrderId}", attempt, message.OrderId);
 
                 if (attempt < maxAttempts)
                 {
@@ -78,10 +67,6 @@ public sealed class PaymentConfirmedProcessor(
 
         await deadLetterStore.AddAsync(deadLetter, cancellationToken);
 
-        logger.LogError(
-            lastException,
-            "Dead-lettered message for OrderId {OrderId} after {RetryCount} attempts",
-            message.OrderId,
-            maxAttempts);
+        logger.LogError(lastException,"Dead-lettered message for OrderId {OrderId} after {RetryCount} attempts", message.OrderId, maxAttempts);
     }
 }

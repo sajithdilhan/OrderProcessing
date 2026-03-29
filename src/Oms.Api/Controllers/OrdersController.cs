@@ -6,9 +6,7 @@ namespace Oms.Api.Controllers;
 
 [ApiController]
 [Route("orders")]
-public class OrdersController(
-    PendingOrdersStore pendingOrdersStore,
-    ILogger<OrdersController> logger) : ControllerBase
+public class OrdersController(PendingOrdersStore pendingOrdersStore, ILogger<OrdersController> logger) : ControllerBase
 {
     [HttpGet("pending")]
     [ProducesResponseType(typeof(IReadOnlyList<PendingOrder>), StatusCodes.Status200OK)]
@@ -16,7 +14,7 @@ public class OrdersController(
     {
         var orders = pendingOrdersStore.GetPendingOrders();
 
-        logger.LogInformation("Returning {OrderCount} pending orders from OMS stub",  orders.Count);
+        logger.LogInformation("Returning {OrderCount} pending orders from OMS",  orders.Count);
 
         return Ok(orders);
     }

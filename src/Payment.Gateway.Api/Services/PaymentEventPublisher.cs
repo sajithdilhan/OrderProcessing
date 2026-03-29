@@ -13,8 +13,6 @@ public sealed class PaymentEventPublisher(
     {
         await publishEndpoint.Publish(paymentConfirmedEvent, cancellationToken);
 
-        logger.LogInformation(
-            "Published PaymentConfirmedEvent for OrderId {OrderId}",
-            paymentConfirmedEvent.OrderId);
+        logger.LogInformation("Published PaymentConfirmedEvent for OrderId {OrderId}", paymentConfirmedEvent.OrderId);
     }
 }

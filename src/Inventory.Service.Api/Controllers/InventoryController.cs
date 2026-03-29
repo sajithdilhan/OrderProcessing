@@ -22,7 +22,7 @@ public class InventoryController(InventoryOperationsStore operationsStore, ILogg
         operationsStore.AddAllocated(request);
 
         logger.LogInformation(
-            "Inventory allocation received for OrderId {OrderId} with {ItemCount} items",
+            "Inventory allocation successful for OrderId {OrderId} with {ItemCount} items",
             request.OrderId,
             request.Items.Length);
 
@@ -46,7 +46,7 @@ public class InventoryController(InventoryOperationsStore operationsStore, ILogg
         operationsStore.AddReserved(request);
 
         logger.LogInformation(
-            "Inventory reservation received for OrderId {OrderId} with {ItemCount} items",
+            "Inventory reservation successful for OrderId {OrderId} with {ItemCount} items",
             request.OrderId,
             request.Items.Length);
 

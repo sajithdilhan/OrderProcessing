@@ -6,15 +6,12 @@ namespace Payment.Gateway.Api.Controllers;
 
 [ApiController]
 [Route("")]
-public class PaymentsController(
-    IPaymentEventPublisher paymentEventPublisher,
-    ILogger<PaymentsController> logger) : ControllerBase
+public class PaymentsController(IPaymentEventPublisher paymentEventPublisher, ILogger<PaymentsController> logger) : ControllerBase
 {
     [HttpPost("payment-confirmed")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> PaymentConfirmed(
-        [FromBody] PaymentConfirmedEvent paymentConfirmedEvent,
+    public async Task<IActionResult> PaymentConfirmed([FromQuery] PaymentConfirmedEvent paymentConfirmedEvent,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(paymentConfirmedEvent.OrderId))
@@ -39,9 +36,7 @@ public class PaymentsController(
 
         await paymentEventPublisher.PublishAsync(paymentConfirmedEvent, cancellationToken);
 
-        logger.LogInformation(
-            "Published payment confirmation event for OrderId {OrderId}",
-            paymentConfirmedEvent.OrderId);
+        logger.LogInformation("Published payment confirmation event for OrderId {OrderId}", paymentConfirmedEvent.OrderId);
 
         return Accepted();
     }

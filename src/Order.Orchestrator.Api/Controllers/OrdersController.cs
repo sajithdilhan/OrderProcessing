@@ -6,9 +6,7 @@ namespace Order.Orchestrator.Api.Controllers;
 
 [ApiController]
 [Route("orders")]
-public sealed class OrdersController(
-    PendingOrderSyncService pendingOrderSyncService,
-    ILogger<OrdersController> logger) : ControllerBase
+public sealed class OrdersController(PendingOrderSyncService pendingOrderSyncService, ILogger<OrdersController> logger) : ControllerBase
 {
     [HttpPost("pending-ping")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
@@ -20,9 +18,7 @@ public sealed class OrdersController(
             return BadRequest("CorrelationId is required.");
         }
 
-        logger.LogInformation(
-            "Received pending order ping with CorrelationId {CorrelationId}",
-            request.CorrelationId);
+        logger.LogInformation("Received pending order ping with CorrelationId {CorrelationId}", request.CorrelationId);
 
         _ = pendingOrderSyncService.SyncPendingOrdersAsync(request.CorrelationId, CancellationToken.None);
 

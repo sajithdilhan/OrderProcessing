@@ -27,20 +27,4 @@ public sealed class InventoryOperationsStore
             _reservedRequests.Add(request);
         }
     }
-
-    public IReadOnlyList<InventoryAllocationRequest> GetAllocated()
-    {
-        lock (_lock)
-        {
-            return _allocatedRequests.ToList().AsReadOnly();
-        }
-    }
-
-    public IReadOnlyList<InventoryAllocationRequest> GetReserved()
-    {
-        lock (_lock)
-        {
-            return _reservedRequests.ToList().AsReadOnly();
-        }
-    }
 }
