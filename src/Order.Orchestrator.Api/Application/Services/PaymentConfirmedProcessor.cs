@@ -21,52 +21,28 @@ public sealed class PaymentConfirmedProcessor(
             return;
         }
 
-        const int maxAttempts = 3;
-        Exception? lastException = null;
-
-        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        try
         {
-            try
-            {
-                logger.LogInformation("Processing payment event for OrderId {OrderId}, attempt {Attempt}", message.OrderId, attempt);
+            logger.LogInformation("Processing payment event for OrderId {OrderId}", message.OrderId);
 
-                var request = new InventoryAllocationRequest(message.OrderId, message.Items);
+            var request = new InventoryAllocationRequest(message.OrderId, message.Items);
 
-                await inventoryClient.ReserveAsync(request, cancellationToken);
-                await processedOrderStore.MarkProcessedAsync(key, cancellationToken);
+            await inventoryClient.ReserveAsync(request, cancellationToken);
+            await processedOrderStore.MarkProcessedAsync(key, cancellationToken);
 
-                logger.LogInformation("Reserved inventory for OrderId {OrderId}", message.OrderId);
-
-                return;
-            }
-            catch (Exception ex)
-            {
-                lastException = ex;
-
-                logger.LogWarning(ex,"Retry attempt {Attempt} failed for OrderId {OrderId}", attempt, message.OrderId);
-
-                if (attempt < maxAttempts)
-                {
-                    var delay = attempt switch
-                    {
-                        1 => TimeSpan.FromSeconds(2),
-                        2 => TimeSpan.FromSeconds(4),
-                        _ => TimeSpan.FromSeconds(8)
-                    };
-
-                    await Task.Delay(delay, cancellationToken);
-                }
-            }
+            logger.LogInformation("Reserved inventory for OrderId {OrderId}", message.OrderId);
         }
+        catch (Exception ex)
+        {
+            var deadLetter = new DeadLetterMessage(
+                OriginalMessage: message,
+                RetryCount: 1,
+                FailureReason: ex.Message,
+                FailedAtUtc: DateTime.UtcNow);
 
-        var deadLetter = new DeadLetterMessage(
-            OriginalMessage: message,
-            RetryCount: maxAttempts,
-            FailureReason: lastException?.Message ?? "Unknown failure",
-            FailedAtUtc: DateTime.UtcNow);
+            await deadLetterStore.AddAsync(deadLetter, cancellationToken);
 
-        await deadLetterStore.AddAsync(deadLetter, cancellationToken);
-
-        logger.LogError(lastException,"Dead-lettered message for OrderId {OrderId} after {RetryCount} attempts", message.OrderId, maxAttempts);
+            logger.LogError(ex,"Dead-lettered message for OrderId {OrderId}", message.OrderId);
+        }
     }
 }
