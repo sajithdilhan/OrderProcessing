@@ -19,7 +19,7 @@ public sealed class PaymentConfirmedProcessorTests
             NullLogger<PaymentConfirmedProcessor>.Instance);
 
     private static PaymentConfirmedEvent MakeEvent(string orderId = "ORD-001") =>
-        new(orderId, "CUST-001", ["ITEM-A"], 99.99m, DateTime.UtcNow);
+        new(orderId, "CUST-001", ["ITEM-A"], 99.99m, DateTime.UtcNow, "CORR-001");
 
     [Fact]
     public async Task QueueProcessor_ProcessesOrder_Success()
@@ -29,7 +29,7 @@ public sealed class PaymentConfirmedProcessorTests
         var deadLetterStore = new InMemoryDeadLetterStore();
         var sut = BuildProcessor(inventoryClient, processedStore, deadLetterStore);
 
-        await sut.ProcessAsync(new PaymentConfirmedEvent("ORD-1001", "CUST-001", ["ITEM-A", "ITEM-B"], 149.90m, DateTime.UtcNow), CancellationToken.None);
+        await sut.ProcessAsync(new PaymentConfirmedEvent("ORD-1001", "CUST-001", ["ITEM-A", "ITEM-B"], 149.90m, DateTime.UtcNow, "CORR-1001"), CancellationToken.None);
 
         Assert.Single(inventoryClient.Reserved);
         Assert.Empty(await deadLetterStore.GetAllAsync(CancellationToken.None));
@@ -44,7 +44,7 @@ public sealed class PaymentConfirmedProcessorTests
         var deadLetterStore = new InMemoryDeadLetterStore();
         var sut = BuildProcessor(inventoryClient, processedStore, deadLetterStore);
 
-        await sut.ProcessAsync(new PaymentConfirmedEvent("ORD-1002", "CUST-002", ["ITEM-X"], 59.90m, DateTime.UtcNow), CancellationToken.None);
+        await sut.ProcessAsync(new PaymentConfirmedEvent("ORD-1002", "CUST-002", ["ITEM-X"], 59.90m, DateTime.UtcNow, "CORR-1002"), CancellationToken.None);
 
         Assert.Empty(inventoryClient.Reserved);
         var deadLetter = Assert.Single(await deadLetterStore.GetAllAsync(CancellationToken.None));
@@ -72,7 +72,7 @@ public sealed class PaymentConfirmedProcessorTests
         var deadLetterStore = new InMemoryDeadLetterStore();
         var sut = BuildProcessor(inventoryClient, deadLetterStore: deadLetterStore);
 
-        var message = new PaymentConfirmedEvent("ORD-004", "CUST-004", ["ITEM-X", "ITEM-Y"], 75m, DateTime.UtcNow);
+        var message = new PaymentConfirmedEvent("ORD-004", "CUST-004", ["ITEM-X", "ITEM-Y"], 75m, DateTime.UtcNow, "CORR-1004");
         await sut.ProcessAsync(message, CancellationToken.None);
 
         var deadLetter = Assert.Single(await deadLetterStore.GetAllAsync(CancellationToken.None));

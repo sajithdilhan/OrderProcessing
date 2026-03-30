@@ -14,7 +14,7 @@ public class PendingOrderSyncService( IOmsClient omsClient, IInventoryClient inv
                 "Starting pending order sync for CorrelationId {CorrelationId}",
                 correlationId);
 
-            var orders = await omsClient.GetPendingOrdersAsync(cancellationToken);
+            var orders = await omsClient.GetPendingOrdersAsync(cancellationToken, correlationId);
 
             logger.LogInformation(
                 "Fetched {OrderCount} pending orders for CorrelationId {CorrelationId}",
@@ -34,7 +34,7 @@ public class PendingOrderSyncService( IOmsClient omsClient, IInventoryClient inv
                     continue;
                 }
 
-                var request = new InventoryAllocationRequest(order.OrderId, order.Items);
+                var request = new InventoryAllocationRequest(order.OrderId, order.Items, correlationId);
 
                 await inventoryClient.AllocateAsync(request, cancellationToken);
                 await processedOrderStore.MarkProcessedAsync(key, cancellationToken);

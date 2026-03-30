@@ -44,7 +44,8 @@ public sealed class QueueStressTests
                     $"CUST-{i:0000}",
                     [$"ITEM-{i:0000}"],
                     10m + i,
-                    DateTime.UtcNow)));
+                    DateTime.UtcNow,
+                    $"CORR-{i:0000}")));
 
             await Task.WhenAll(tasks);
 

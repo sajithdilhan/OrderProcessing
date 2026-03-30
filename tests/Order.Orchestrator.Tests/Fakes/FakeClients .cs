@@ -17,7 +17,7 @@ internal sealed class FakeOmsClient : IOmsClient
         _throwOnGet = throwOnGet;
     }
 
-    public async Task<IReadOnlyList<PendingOrder>> GetPendingOrdersAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<PendingOrder>> GetPendingOrdersAsync(CancellationToken cancellationToken, string? correlationId)
     {
         if (_throwOnGet)
             throw new InvalidOperationException("OMS unavailable.");

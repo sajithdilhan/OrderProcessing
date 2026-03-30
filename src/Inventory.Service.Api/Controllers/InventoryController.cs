@@ -22,9 +22,10 @@ public class InventoryController(InventoryOperationsStore operationsStore, ILogg
         operationsStore.AddAllocated(request);
 
         logger.LogInformation(
-            "Inventory allocation successful for OrderId {OrderId} with {ItemCount} items",
+            "Inventory allocation successful for OrderId {OrderId} with {ItemCount} items. CorrelationId: {CorrelationId}",
             request.OrderId,
-            request.Items.Length);
+            request.Items.Length,
+            request.CorrelationId);
 
         return Ok(new InventoryOperationResponse(
             Success: true,
@@ -46,9 +47,10 @@ public class InventoryController(InventoryOperationsStore operationsStore, ILogg
         operationsStore.AddReserved(request);
 
         logger.LogInformation(
-            "Inventory reservation successful for OrderId {OrderId} with {ItemCount} items",
+            "Inventory reservation successful for OrderId {OrderId} with {ItemCount} items. CorrelationId: {CorrelationId}",
             request.OrderId,
-            request.Items.Length);
+            request.Items.Length,
+            request.CorrelationId);
 
         return Ok(new InventoryOperationResponse(
             Success: true,

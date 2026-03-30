@@ -42,7 +42,8 @@ public sealed class Flow2Tests
                 "CUST-301",
                 ["SKU-1", "SKU-2"],
                 199m,
-                DateTime.UtcNow);
+                DateTime.UtcNow,
+                "CORR-3001");
 
             await harness.Bus.Publish(message);
 

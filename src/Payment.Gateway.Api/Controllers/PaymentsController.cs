@@ -30,14 +30,14 @@ public class PaymentsController(IPaymentEventPublisher paymentEventPublisher, IL
         }
 
         logger.LogInformation(
-            "Received payment confirmation for OrderId {OrderId} and CustomerId {CustomerId}",
+            "Received payment confirmation for OrderId {OrderId} and CustomerId {CustomerId}. CorrelationId: {CorrelationId}",
             paymentConfirmedEvent.OrderId,
-            paymentConfirmedEvent.CustomerId);
+            paymentConfirmedEvent.CustomerId,
+            paymentConfirmedEvent.CorrelationId);
 
         await paymentEventPublisher.PublishAsync(paymentConfirmedEvent, cancellationToken);
 
-        logger.LogInformation("Published payment confirmation event for OrderId {OrderId}", paymentConfirmedEvent.OrderId);
-
+        logger.LogInformation("Published payment confirmation event for OrderId {OrderId} with CorrelationId {CorrelationId}", paymentConfirmedEvent.OrderId, paymentConfirmedEvent.CorrelationId);
         return Accepted();
     }
 }

@@ -6,10 +6,10 @@ namespace Order.Orchestrator.Api.Infrastructure.Clients;
 
 public sealed class OmsClient(HttpClient httpClient) : IOmsClient
 {
-    public async Task<IReadOnlyList<PendingOrder>> GetPendingOrdersAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<PendingOrder>> GetPendingOrdersAsync(CancellationToken cancellationToken, string? correlationId)
     {
         var result = await httpClient.GetFromJsonAsync<List<PendingOrder>>(
-            "/orders/pending",
+            $"/orders/pending?correlationId={correlationId}",
             cancellationToken);
 
         return result ?? [];

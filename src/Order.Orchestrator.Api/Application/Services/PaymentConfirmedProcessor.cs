@@ -23,14 +23,14 @@ public sealed class PaymentConfirmedProcessor(
 
         try
         {
-            logger.LogInformation("Processing payment event for OrderId {OrderId}", message.OrderId);
+            logger.LogInformation("Processing payment event for OrderId {OrderId} with CorrelationId {CorrelationId}", message.OrderId, message.CorrelationId);
 
-            var request = new InventoryAllocationRequest(message.OrderId, message.Items);
+            var request = new InventoryAllocationRequest(message.OrderId, message.Items, message.CorrelationId);
 
             await inventoryClient.ReserveAsync(request, cancellationToken);
             await processedOrderStore.MarkProcessedAsync(key, cancellationToken);
 
-            logger.LogInformation("Reserved inventory for OrderId {OrderId}", message.OrderId);
+            logger.LogInformation("Reserved inventory for OrderId {OrderId} with CorrelationId {CorrelationId}", message.OrderId, message.CorrelationId);
         }
         catch (Exception ex)
         {
@@ -42,7 +42,7 @@ public sealed class PaymentConfirmedProcessor(
 
             await deadLetterStore.AddAsync(deadLetter, cancellationToken);
 
-            logger.LogError(ex,"Dead-lettered message for OrderId {OrderId}", message.OrderId);
+            logger.LogError(ex,"Dead-lettered message for OrderId {OrderId} with CorrelationId {CorrelationId}", message.OrderId, message.CorrelationId);
         }
     }
 }

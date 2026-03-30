@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Order.Orchestrator.Api.Application.Services;
 using Shared.Contracts.Orders;
+using System.Text.Json;
 
 namespace Order.Orchestrator.Api.Consumers;
 
@@ -8,7 +9,7 @@ public sealed class PaymentConfirmedConsumer(IServiceScopeFactory serviceScopeFa
 {
     public async Task Consume(ConsumeContext<PaymentConfirmedEvent> context)
     {
-        logger.LogInformation("Consumed PaymentConfirmedEvent for OrderId {OrderId}", context.Message.OrderId);
+        logger.LogInformation("Consumed PaymentConfirmedEvent for OrderId {OrderId}, message: {Message}", context.Message.OrderId, JsonSerializer.Serialize(context.Message));
 
         using var scope = serviceScopeFactory.CreateScope();
 
