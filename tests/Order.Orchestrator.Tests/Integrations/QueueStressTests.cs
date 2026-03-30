@@ -7,7 +7,7 @@ using Order.Orchestrator.Api.Application.Interfaces;
 using Order.Orchestrator.Api.Application.Services;
 using Order.Orchestrator.Api.Consumers;
 using Order.Orchestrator.Api.Infrastructure.Storage;
-using Order.Orchestrator.Tests.TestDoubles;
+using Order.Orchestrator.Tests.Fakes;
 using Shared.Contracts.Orders;
 
 namespace Order.Orchestrator.Tests.Integration;

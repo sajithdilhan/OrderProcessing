@@ -2,7 +2,7 @@
 using Order.Orchestrator.Api.Application.Interfaces;
 using Shared.Contracts.Orders;
 
-namespace Order.Orchestrator.Tests.TestDoubles;
+namespace Order.Orchestrator.Tests.Fakes;
 
 internal sealed class FakeOmsClient : IOmsClient
 {
