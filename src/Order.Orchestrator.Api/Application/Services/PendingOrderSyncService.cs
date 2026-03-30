@@ -3,7 +3,7 @@ using Shared.Contracts.Orders;
 
 namespace Order.Orchestrator.Api.Application.Services;
 
-public sealed class PendingOrderSyncService( IOmsClient omsClient, IInventoryClient inventoryClient, IProcessedOrderStore processedOrderStore,
+public class PendingOrderSyncService( IOmsClient omsClient, IInventoryClient inventoryClient, IProcessedOrderStore processedOrderStore,
     ILogger<PendingOrderSyncService> logger)
 {
     public async Task SyncPendingOrdersAsync(string correlationId, CancellationToken cancellationToken)

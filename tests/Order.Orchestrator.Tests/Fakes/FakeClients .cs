@@ -8,19 +8,22 @@ internal sealed class FakeOmsClient : IOmsClient
 {
     private readonly IReadOnlyList<PendingOrder> _orders;
     private readonly TimeSpan _delay;
+    private readonly bool _throwOnGet;
 
-    public FakeOmsClient(IReadOnlyList<PendingOrder>? orders = null, TimeSpan? delay = null)
+    public FakeOmsClient(IReadOnlyList<PendingOrder>? orders = null, TimeSpan? delay = null, bool throwOnGet = false)
     {
         _orders = orders ?? [];
         _delay = delay ?? TimeSpan.Zero;
+        _throwOnGet = throwOnGet;
     }
 
     public async Task<IReadOnlyList<PendingOrder>> GetPendingOrdersAsync(CancellationToken cancellationToken)
     {
+        if (_throwOnGet)
+            throw new InvalidOperationException("OMS unavailable.");
+
         if (_delay > TimeSpan.Zero)
-        {
             await Task.Delay(_delay, cancellationToken);
-        }
 
         return _orders;
     }
